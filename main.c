@@ -1,51 +1,60 @@
 #include <stdio.h>
-#include <stdbool.h>
-#include <math.h>
 
-int nums[10]; // массив для проверки использованности цифр
+int removeDublicates(int num);
 
-void initialize();
-int removeRepeatingDigits(int num);
+int main()
+{
+    int num;
 
-int main(void) {
-	initialize();
+    printf("Input a number: \n> ");
 
-	printf("Input a number: ");
+    if (scanf("%d", &num) != 1) {
+        printf("Something went wrong");
+        return -1;
+    }
 
-	int num;
+    printf("%d", removeDublicates(num));
 
-	if (scanf("%d", &num) != 1) {
-		printf("Invalid input");
-		return -1;
-	}
-
-	printf("%d", removeRepeatingDigits(num));
-
-	return 0;
+    return 0;
 }
 
-void initialize() {
-	for (int i = 0; i < 10; i++) {
-		nums[i] = 0;
-	}
-}
+int removeDublicates(int num) {
+    int digits[10]; // цифры числа
+    int used[10]; // использованные цифры
 
-int removeRepeatingDigits(int num) {
-	int i = 0; // разряд числа
-	int digit; // текущая цифра
-	int result = 0; // конечное число
+    int isNegative = 0;
+    int result = 0;
 
-	while (num) {
-		digit = num % 10;
+    int i = 0;
 
-		if (!nums[digit]) { // проверка, если число уже использовано
-			result += digit * pow(10, i); //добавляем цифру в нужном разряде к конечному числу
-			nums[digit] = 1; // теперь цифра будет являться использованной
-			i++; //увеличиваем разряд числа
-		}
+    for (int i = 0; i < 10; i++) {
+        used[i] = 0;
+        digits[i] = 0;
+    }
 
-		num /= 10;
-	}
+    if (num < 0) { // Проверка, если число является отрицательным
+        isNegative = 1; // Ставим флаг отрицательности
+        num *= -1;
+    }
 
-	return result;
+    while (num) { // Заполнить массив цифрами в том же самом порядке, в котором они поступили на ввод
+        digits[9 - i] = num % 10;
+        i++;
+        num /= 10;
+    }
+
+    for (int i = 0; i < 10; i++) {
+        if (digits[i] == 0 && result == 0) continue; // Если есть ведущие нули, то мы их не считаем
+
+        if (!used[digits[i]]) { // Проверяем, если число еще не использовано
+            result = 10 * result + digits[i]; // Делаем сдвиг налево и прибавляем справа текущее число
+            used[digits[i]] = 1; // Отмечаем, что число было использовано
+        }
+    }
+
+    if (isNegative) { // Если изначально было отрицательное число, то мы и возвращаем отрицательное
+        result *= -1;
+    }
+
+    return result;
 }
